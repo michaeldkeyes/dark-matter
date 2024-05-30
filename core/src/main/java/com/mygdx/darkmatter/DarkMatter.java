@@ -12,6 +12,8 @@ import java.util.EnumMap;
 
 public class DarkMatter extends Game {
 
+    public static final float UNIT_SCALE = 1 / 16f;
+
     private EnumMap<ScreenType, Screen> screenCache;
     private SpriteBatch batch;
 
