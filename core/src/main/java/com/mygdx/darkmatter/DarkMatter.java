@@ -2,6 +2,7 @@ package com.mygdx.darkmatter;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
@@ -9,17 +10,16 @@ import com.mygdx.darkmatter.screen.ScreenType;
 
 import java.util.EnumMap;
 
-/**
- * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
- */
 public class DarkMatter extends Game {
 
     private EnumMap<ScreenType, Screen> screenCache;
+    private SpriteBatch batch;
 
     @Override
     public void create() {
+        batch = new SpriteBatch();
 
-        setScreen(ScreenType.FIRST_SCREEN);
+        setScreen(ScreenType.GAME_SCREEN);
     }
 
     public void setScreen(ScreenType screenType) {
@@ -41,5 +41,14 @@ public class DarkMatter extends Game {
         } else {
             setScreen(screen);
         }
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+    }
+
+    public SpriteBatch getSpriteBatch() {
+        return batch;
     }
 }

@@ -2,8 +2,7 @@ package com.mygdx.darkmatter.screen;
 
 public enum ScreenType {
 
-    FIRST_SCREEN(FirstScreen.class),
-    SECOND_SCREEN(SecondScreen.class);
+    GAME_SCREEN(GameScreen.class);
 
     private final Class<? extends AbstractScreen> screenClass;
 
