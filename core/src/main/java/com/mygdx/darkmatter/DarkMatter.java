@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.darkmatter.screen.ScreenType;
 
 import java.util.EnumMap;
@@ -17,14 +19,19 @@ public class DarkMatter extends Game {
 
     public static final float UNIT_SCALE = 1 / 16f;
 
+    private static final float WORLD_WIDTH = 9;
+    private static final float WORLD_HEIGHT = 16;
+
     private Engine engine;
     private EnumMap<ScreenType, Screen> screenCache;
     private SpriteBatch batch;
+    private Viewport viewport;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         engine = new PooledEngine();
+        viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT);
 
         setScreen(ScreenType.GAME_SCREEN);
     }
@@ -63,5 +70,9 @@ public class DarkMatter extends Game {
 
     public Engine getEngine() {
         return engine;
+    }
+
+    public Viewport getViewport() {
+        return viewport;
     }
 }

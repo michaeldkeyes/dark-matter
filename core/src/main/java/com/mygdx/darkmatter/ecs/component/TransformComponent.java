@@ -20,5 +20,4 @@ public class TransformComponent implements Component, Pool.Poolable {
         size.set(1, 1);
         rotation = 0f;
     }
-
 }
