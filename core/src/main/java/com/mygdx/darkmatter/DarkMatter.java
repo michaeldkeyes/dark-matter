@@ -6,9 +6,8 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
@@ -33,9 +32,7 @@ public class DarkMatter extends Game {
     private SpriteBatch batch;
     private Viewport viewport;
 
-    private TextureRegion defaultRegion;
-    private TextureRegion leftRegion;
-    private TextureRegion rightRegion;
+    private TextureAtlas graphicsAtlas;
 
     @Override
     public void create() {
@@ -43,13 +40,15 @@ public class DarkMatter extends Game {
         batch = new SpriteBatch();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT);
 
-        defaultRegion = new TextureRegion(new Texture(Gdx.files.internal("graphics/ship_base.png")));
-        leftRegion = new TextureRegion(new Texture(Gdx.files.internal("graphics/ship_left.png")));
-        rightRegion = new TextureRegion(new Texture(Gdx.files.internal("graphics/ship_right.png")));
+        graphicsAtlas = new TextureAtlas("graphics/dark-matter.atlas");
 
         engine = new PooledEngine();
         engine.addSystem(new PlayerSystem(viewport));
-        engine.addSystem(new PlayerAnimationSystem(defaultRegion, leftRegion, rightRegion));
+        engine.addSystem(new PlayerAnimationSystem(
+            graphicsAtlas.findRegion("ship_base"),
+            graphicsAtlas.findRegion("ship_left"),
+            graphicsAtlas.findRegion("ship_right"))
+        );
         engine.addSystem(new RenderSystem(batch, viewport));
 
         setScreen(ScreenType.GAME_SCREEN);
@@ -81,9 +80,7 @@ public class DarkMatter extends Game {
         super.dispose();
         Gdx.app.log("DarkMatter", "Sprites in batch: " + batch.maxSpritesInBatch);
         batch.dispose();
-        defaultRegion.getTexture().dispose();
-        leftRegion.getTexture().dispose();
-        rightRegion.getTexture().dispose();
+        graphicsAtlas.dispose();
     }
 
     public SpriteBatch getSpriteBatch() {
@@ -96,5 +93,9 @@ public class DarkMatter extends Game {
 
     public Viewport getViewport() {
         return viewport;
+    }
+
+    public TextureAtlas getGraphicsAtlas() {
+        return graphicsAtlas;
     }
 }
