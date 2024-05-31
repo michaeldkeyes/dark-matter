@@ -2,15 +2,21 @@ package com.mygdx.darkmatter;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.darkmatter.ecs.system.PlayerAnimationSystem;
+import com.mygdx.darkmatter.ecs.system.PlayerSystem;
+import com.mygdx.darkmatter.ecs.system.RenderSystem;
 import com.mygdx.darkmatter.screen.ScreenType;
 
 import java.util.EnumMap;
@@ -27,11 +33,24 @@ public class DarkMatter extends Game {
     private SpriteBatch batch;
     private Viewport viewport;
 
+    private TextureRegion defaultRegion;
+    private TextureRegion leftRegion;
+    private TextureRegion rightRegion;
+
     @Override
     public void create() {
+        Gdx.app.setLogLevel(Application.LOG_DEBUG);
         batch = new SpriteBatch();
-        engine = new PooledEngine();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT);
+
+        defaultRegion = new TextureRegion(new Texture(Gdx.files.internal("graphics/ship_base.png")));
+        leftRegion = new TextureRegion(new Texture(Gdx.files.internal("graphics/ship_left.png")));
+        rightRegion = new TextureRegion(new Texture(Gdx.files.internal("graphics/ship_right.png")));
+
+        engine = new PooledEngine();
+        engine.addSystem(new PlayerSystem(viewport));
+        engine.addSystem(new PlayerAnimationSystem(defaultRegion, leftRegion, rightRegion));
+        engine.addSystem(new RenderSystem(batch, viewport));
 
         setScreen(ScreenType.GAME_SCREEN);
     }
@@ -62,6 +81,9 @@ public class DarkMatter extends Game {
         super.dispose();
         Gdx.app.log("DarkMatter", "Sprites in batch: " + batch.maxSpritesInBatch);
         batch.dispose();
+        defaultRegion.getTexture().dispose();
+        leftRegion.getTexture().dispose();
+        rightRegion.getTexture().dispose();
     }
 
     public SpriteBatch getSpriteBatch() {

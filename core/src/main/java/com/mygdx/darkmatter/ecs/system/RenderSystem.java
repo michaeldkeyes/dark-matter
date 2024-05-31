@@ -14,13 +14,14 @@ import java.util.Comparator;
 
 public class RenderSystem extends SortedIteratingSystem {
 
+    private static final Family FAMILY = Family.all(TransformComponent.class, GraphicComponent.class).get();
     private static final String TAG = RenderSystem.class.getSimpleName();
 
     private final SpriteBatch batch;
     private final Viewport viewport;
 
     public RenderSystem(final SpriteBatch batch, final Viewport viewport) {
-        super(Family.all(TransformComponent.class, GraphicComponent.class).get(), new ZComparator());
+        super(FAMILY, new ZComparator());
 
         this.batch = batch;
         this.viewport = viewport;
@@ -46,7 +47,6 @@ public class RenderSystem extends SortedIteratingSystem {
             return;
         }
 
-        graphicComponent.sprite.setPosition(transformComponent.position.x, transformComponent.position.y);
         graphicComponent.sprite.setRotation(transformComponent.rotation);
         graphicComponent.sprite.setBounds(
             transformComponent.position.x,
