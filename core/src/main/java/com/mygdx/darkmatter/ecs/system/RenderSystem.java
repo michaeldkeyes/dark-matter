@@ -50,8 +50,8 @@ public class RenderSystem extends SortedIteratingSystem {
 
         graphicComponent.sprite.setRotation(transformComponent.rotation);
         graphicComponent.sprite.setBounds(
-            transformComponent.position.x,
-            transformComponent.position.y,
+            transformComponent.interpolatedPosition.x,
+            transformComponent.interpolatedPosition.y,
             transformComponent.size.x,
             transformComponent.size.y
         );

@@ -11,13 +11,15 @@ import com.mygdx.darkmatter.ecs.component.*;
  */
 public class GameScreen extends AbstractScreen {
 
+    private static final float MAX_DELTA_TIME = 1 / 20f;
+
     public GameScreen(final DarkMatter game) {
         super(game);
 
         final Entity entity = engine.createEntity();
 
         final TransformComponent transformComponent = engine.createComponent(TransformComponent.class);
-        transformComponent.position.set(4.5f, 8f, 0);
+        transformComponent.setInitialPosition(4.5f, 8f, 0f);
 
         final MoveComponent moveComponent = engine.createComponent(MoveComponent.class);
 
@@ -42,7 +44,7 @@ public class GameScreen extends AbstractScreen {
             Gdx.app.exit();
         }
 
-        engine.update(delta);
+        engine.update(Math.min(MAX_DELTA_TIME, delta));
 
         // uiViewport.apply();
     }

@@ -30,8 +30,26 @@ public class MoveSystem extends IteratingSystem {
         accumulator += deltaTime;
         while (accumulator >= UPDATE_RATE) {
             accumulator -= UPDATE_RATE;
+
+            getEntities().forEach(entity -> {
+                final TransformComponent transformComponent = TransformComponent.MAPPER.get(entity);
+
+                transformComponent.previousPosition.set(transformComponent.position);
+            });
+
             super.update(UPDATE_RATE);
         }
+
+        final float alpha = accumulator / UPDATE_RATE;
+        getEntities().forEach(entity -> {
+            final TransformComponent transformComponent = TransformComponent.MAPPER.get(entity);
+
+            transformComponent.interpolatedPosition.set(
+                MathUtils.lerp(transformComponent.previousPosition.x, transformComponent.position.x, alpha),
+                MathUtils.lerp(transformComponent.previousPosition.y, transformComponent.position.y, alpha),
+                transformComponent.position.z
+            );
+        });
     }
 
     @Override
