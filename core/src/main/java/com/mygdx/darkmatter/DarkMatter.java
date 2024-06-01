@@ -13,9 +13,7 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.darkmatter.ecs.system.PlayerAnimationSystem;
-import com.mygdx.darkmatter.ecs.system.PlayerSystem;
-import com.mygdx.darkmatter.ecs.system.RenderSystem;
+import com.mygdx.darkmatter.ecs.system.*;
 import com.mygdx.darkmatter.screen.ScreenType;
 
 import java.util.EnumMap;
@@ -24,8 +22,8 @@ public class DarkMatter extends Game {
 
     public static final float UNIT_SCALE = 1 / 16f;
 
-    private static final float WORLD_WIDTH = 9;
-    private static final float WORLD_HEIGHT = 16;
+    public static final float WORLD_WIDTH = 9;
+    public static final float WORLD_HEIGHT = 16;
 
     private Engine engine;
     private EnumMap<ScreenType, Screen> screenCache;
@@ -44,12 +42,14 @@ public class DarkMatter extends Game {
 
         engine = new PooledEngine();
         engine.addSystem(new PlayerSystem(viewport));
+        engine.addSystem(new MoveSystem());
         engine.addSystem(new PlayerAnimationSystem(
             graphicsAtlas.findRegion("ship_base"),
             graphicsAtlas.findRegion("ship_left"),
             graphicsAtlas.findRegion("ship_right"))
         );
         engine.addSystem(new RenderSystem(batch, viewport));
+        engine.addSystem(new RemoveSystem());
 
         setScreen(ScreenType.GAME_SCREEN);
     }

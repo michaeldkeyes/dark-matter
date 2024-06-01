@@ -29,6 +29,7 @@ public class RenderSystem extends SortedIteratingSystem {
 
     @Override
     public void update(final float deltaTime) {
+        forceSort();
         ScreenUtils.clear(0, 0, 0, 1);
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
@@ -61,7 +62,17 @@ public class RenderSystem extends SortedIteratingSystem {
 
         @Override
         public int compare(final Entity entityA, final Entity entityB) {
-            return (int) Math.signum(TransformComponent.MAPPER.get(entityA).position.z - TransformComponent.MAPPER.get(entityB).position.z);
+            final TransformComponent transformComponentA = TransformComponent.MAPPER.get(entityA);
+            final TransformComponent transformComponentB = TransformComponent.MAPPER.get(entityB);
+
+            final int zDiff =
+                (int) Math.signum(transformComponentA.position.z - transformComponentB.position.z);
+
+            if (zDiff == 0) {
+                return (int) Math.signum(transformComponentA.position.y - transformComponentB.position.y);
+            } else {
+                return zDiff;
+            }
         }
     }
 }
