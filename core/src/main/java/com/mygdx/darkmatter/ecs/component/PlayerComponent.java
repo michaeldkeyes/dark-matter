@@ -11,10 +11,10 @@ public class PlayerComponent implements Component, Pool.Poolable {
     private static final int MAX_LIFE = 100;
     private static final int MAX_SHIELD = 100;
 
-    public int life = MAX_LIFE;
-    public int maxLife = MAX_LIFE;
-    public int shield = 0;
-    public int maxShield = MAX_SHIELD;
+    public float life = MAX_LIFE;
+    public float maxLife = MAX_LIFE;
+    public float shield = 0;
+    public float maxShield = MAX_SHIELD;
     public float distance = 0f;
 
     @Override
