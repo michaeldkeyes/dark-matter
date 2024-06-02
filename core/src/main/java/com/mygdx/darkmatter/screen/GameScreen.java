@@ -6,6 +6,9 @@ import com.badlogic.gdx.Input;
 import com.mygdx.darkmatter.DarkMatter;
 import com.mygdx.darkmatter.ecs.component.*;
 
+import static com.mygdx.darkmatter.DarkMatter.WORLD_WIDTH;
+import static com.mygdx.darkmatter.ecs.system.DamageSystem.DAMAGE_AREA_HEIGHT;
+
 /**
  * First screen of the application. Displayed after the application is created.
  */
@@ -36,6 +39,22 @@ public class GameScreen extends AbstractScreen {
         entity.add(facingComponent);
 
         engine.addEntity(entity);
+
+        final Entity darkMatter = engine.createEntity();
+        final TransformComponent darkMatterTransform = engine.createComponent(TransformComponent.class);
+        darkMatterTransform.size.set(WORLD_WIDTH, DAMAGE_AREA_HEIGHT);
+
+        final AnimationComponent darkMatterAnimation = engine.createComponent(AnimationComponent.class);
+        darkMatterAnimation.type = AnimationComponent.AnimationType.DARK_MATTER;
+
+        final GraphicComponent darkMatterGraphic = engine.createComponent(GraphicComponent.class);
+
+        darkMatter.add(darkMatterTransform);
+        darkMatter.add(darkMatterAnimation);
+        darkMatter.add(darkMatterGraphic);
+
+        engine.addEntity(darkMatter);
+
     }
 
     @Override

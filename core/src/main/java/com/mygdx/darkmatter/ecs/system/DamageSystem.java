@@ -9,7 +9,7 @@ import com.mygdx.darkmatter.ecs.component.TransformComponent;
 
 public class DamageSystem extends IteratingSystem {
 
-    private static final float DAMAGE_AREA_HEIGHT = 2f;
+    public static final float DAMAGE_AREA_HEIGHT = 2f;
     private static final float DAMAGE_PER_SECOND = 25f;
     private static final float DEATH_EXPLOSION_DURATION = 0.9f;
 
