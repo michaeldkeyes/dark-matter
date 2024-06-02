@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.mygdx.darkmatter.DarkMatter;
 import com.mygdx.darkmatter.ecs.component.*;
 
+import static com.mygdx.darkmatter.DarkMatter.UNIT_SCALE;
 import static com.mygdx.darkmatter.DarkMatter.WORLD_WIDTH;
 import static com.mygdx.darkmatter.ecs.system.DamageSystem.DAMAGE_AREA_HEIGHT;
 
@@ -19,10 +20,10 @@ public class GameScreen extends AbstractScreen {
     public GameScreen(final DarkMatter game) {
         super(game);
 
-        final Entity entity = engine.createEntity();
+        final Entity playerShip = engine.createEntity();
 
         final TransformComponent transformComponent = engine.createComponent(TransformComponent.class);
-        transformComponent.setInitialPosition(4.5f, 8f, 0f);
+        transformComponent.setInitialPosition(4.5f, 8f, 1f);
 
         final MoveComponent moveComponent = engine.createComponent(MoveComponent.class);
 
@@ -32,13 +33,29 @@ public class GameScreen extends AbstractScreen {
 
         final FacingComponent facingComponent = engine.createComponent(FacingComponent.class);
 
-        entity.add(transformComponent);
-        entity.add(moveComponent);
-        entity.add(graphicComponent);
-        entity.add(playerComponent);
-        entity.add(facingComponent);
+        playerShip.add(transformComponent);
+        playerShip.add(moveComponent);
+        playerShip.add(graphicComponent);
+        playerShip.add(playerComponent);
+        playerShip.add(facingComponent);
 
-        engine.addEntity(entity);
+        engine.addEntity(playerShip);
+
+        final Entity fire = engine.createEntity();
+        final TransformComponent fireTransform = engine.createComponent(TransformComponent.class);
+        final AttachComponent attachComponent = engine.createComponent(AttachComponent.class);
+        attachComponent.entity = playerShip;
+        attachComponent.offset.set(1 * UNIT_SCALE, -6 * UNIT_SCALE);
+        final GraphicComponent fireGraphic = engine.createComponent(GraphicComponent.class);
+        final AnimationComponent fireAnimation = engine.createComponent(AnimationComponent.class);
+        fireAnimation.type = AnimationComponent.AnimationType.FIRE;
+
+        fire.add(fireTransform);
+        fire.add(attachComponent);
+        fire.add(fireGraphic);
+        fire.add(fireAnimation);
+
+        engine.addEntity(fire);
 
         final Entity darkMatter = engine.createEntity();
         final TransformComponent darkMatterTransform = engine.createComponent(TransformComponent.class);

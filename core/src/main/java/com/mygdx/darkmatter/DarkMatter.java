@@ -49,6 +49,7 @@ public class DarkMatter extends Game {
             graphicsAtlas.findRegion("ship_left"),
             graphicsAtlas.findRegion("ship_right"))
         );
+        engine.addSystem(new AttachSystem());
         engine.addSystem(new AnimationSystem(graphicsAtlas));
         engine.addSystem(new RenderSystem(batch, viewport));
         engine.addSystem(new RemoveSystem());

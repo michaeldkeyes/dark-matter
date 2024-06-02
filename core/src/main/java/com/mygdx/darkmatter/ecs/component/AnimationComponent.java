@@ -25,7 +25,8 @@ public class AnimationComponent implements Component, Pool.Poolable {
 
     public enum AnimationType {
         NONE(""),
-        DARK_MATTER("dark_matter", Animation.PlayMode.LOOP, 1f);
+        DARK_MATTER("dark_matter", Animation.PlayMode.LOOP, 1f),
+        FIRE("fire");
 
         AnimationType(final String atlasKey) {
             this.atlasKey = atlasKey;
