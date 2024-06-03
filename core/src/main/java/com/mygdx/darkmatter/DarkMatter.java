@@ -43,6 +43,7 @@ public class DarkMatter extends Game {
         engine = new PooledEngine();
         engine.addSystem(new PlayerSystem(viewport));
         engine.addSystem(new MoveSystem());
+        engine.addSystem(new PowerUpSystem(engine));
         engine.addSystem(new DamageSystem());
         engine.addSystem(new PlayerAnimationSystem(
             graphicsAtlas.findRegion("ship_base"),
