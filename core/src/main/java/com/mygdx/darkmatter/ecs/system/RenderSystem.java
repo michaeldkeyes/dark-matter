@@ -4,7 +4,10 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.SortedIteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.darkmatter.ecs.component.GraphicComponent;
@@ -18,22 +21,44 @@ public class RenderSystem extends SortedIteratingSystem {
     private static final String TAG = RenderSystem.class.getSimpleName();
 
     private final SpriteBatch batch;
+    private final Sprite background;
+    private final Viewport uiViewport;
     private final Viewport viewport;
 
-    public RenderSystem(final SpriteBatch batch, final Viewport viewport) {
+    private Vector2 backgroundScrollSpeed = new Vector2(0.03f, -0.25f);
+
+    public RenderSystem(final SpriteBatch batch, final Viewport viewport,
+                        final Viewport uiViewport,  final Texture backgroundTexture) {
         super(FAMILY, new ZComparator());
 
         this.batch = batch;
+
+        backgroundTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        background = new Sprite(backgroundTexture);
+
         this.viewport = viewport;
+        this.uiViewport = uiViewport;
     }
 
     @Override
     public void update(final float deltaTime) {
-        forceSort();
         ScreenUtils.clear(0, 0, 0, 1);
+
+        uiViewport.apply();
+        batch.setProjectionMatrix(uiViewport.getCamera().combined);
+        batch.begin();
+
+        background.scroll(backgroundScrollSpeed.x * deltaTime, backgroundScrollSpeed.y * deltaTime);
+        background.draw(batch);
+
+        batch.end();
+
+        forceSort();
+
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
+
         super.update(deltaTime);
         batch.end();
     }

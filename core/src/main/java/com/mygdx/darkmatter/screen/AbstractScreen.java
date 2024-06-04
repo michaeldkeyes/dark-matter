@@ -11,17 +11,20 @@ public abstract class AbstractScreen extends ScreenAdapter {
     protected final DarkMatter game;
     protected final Engine engine;
     protected final SpriteBatch batch;
+    protected final Viewport uiViewport;
     protected final Viewport viewport;
 
     protected AbstractScreen(final DarkMatter game) {
         this.game = game;
         this.batch = game.getSpriteBatch();
         this.engine = game.getEngine();
+        this.uiViewport = game.getUiViewport();
         this.viewport = game.getViewport();
     }
 
     @Override
     public void resize(final int width, final int height) {
         viewport.update(width, height, true);
+        uiViewport.update(width, height, true);
     }
 }

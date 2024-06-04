@@ -6,6 +6,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -21,23 +22,28 @@ import java.util.EnumMap;
 public class DarkMatter extends Game {
 
     public static final float UNIT_SCALE = 1 / 16f;
-
     public static final float WORLD_WIDTH = 9;
+    public static final float WORLD_WIDTH_PIXELS = 135;
     public static final float WORLD_HEIGHT = 16;
+    public static final float WORLD_HEIGHT_PIXELS = 240;
 
     private Engine engine;
     private EnumMap<ScreenType, Screen> screenCache;
     private SpriteBatch batch;
+    private Viewport uiViewport;
     private Viewport viewport;
 
+    private Texture backgroundTexture;
     private TextureAtlas graphicsAtlas;
 
     @Override
     public void create() {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
         batch = new SpriteBatch();
+        uiViewport = new FitViewport(WORLD_WIDTH_PIXELS, WORLD_HEIGHT_PIXELS);
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT);
 
+        backgroundTexture = new Texture("graphics/background.png");
         graphicsAtlas = new TextureAtlas("graphics/dark-matter.atlas");
 
         engine = new PooledEngine();
@@ -52,7 +58,7 @@ public class DarkMatter extends Game {
         );
         engine.addSystem(new AttachSystem());
         engine.addSystem(new AnimationSystem(graphicsAtlas));
-        engine.addSystem(new RenderSystem(batch, viewport));
+        engine.addSystem(new RenderSystem(batch, viewport, uiViewport, backgroundTexture));
         engine.addSystem(new RemoveSystem());
         engine.addSystem(new DebugSystem());
 
@@ -86,6 +92,7 @@ public class DarkMatter extends Game {
         Gdx.app.log("DarkMatter", "Sprites in batch: " + batch.maxSpritesInBatch);
         batch.dispose();
         graphicsAtlas.dispose();
+        backgroundTexture.dispose();
     }
 
     public SpriteBatch getSpriteBatch() {
@@ -100,7 +107,7 @@ public class DarkMatter extends Game {
         return viewport;
     }
 
-    public TextureAtlas getGraphicsAtlas() {
-        return graphicsAtlas;
+    public Viewport getUiViewport() {
+        return uiViewport;
     }
 }
