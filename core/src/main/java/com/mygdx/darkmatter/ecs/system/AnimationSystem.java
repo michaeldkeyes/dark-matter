@@ -13,13 +13,14 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.mygdx.darkmatter.ecs.component.AnimationComponent;
 import com.mygdx.darkmatter.ecs.component.AnimationComponent.Animation2D;
 import com.mygdx.darkmatter.ecs.component.GraphicComponent;
+import com.mygdx.darkmatter.ecs.component.RemoveComponent;
 
 import java.util.EnumMap;
 
 public class AnimationSystem extends IteratingSystem implements EntityListener {
 
     private static final String TAG = AnimationSystem.class.getSimpleName();
-    private static final Family FAMILY = Family.all(AnimationComponent.class, GraphicComponent.class).get();
+    private static final Family FAMILY = Family.all(AnimationComponent.class, GraphicComponent.class).exclude(RemoveComponent.class).get();
 
     private final EnumMap<AnimationComponent.AnimationType, Animation2D> animationCache;
     private final TextureAtlas atlas;
@@ -94,9 +95,10 @@ public class AnimationSystem extends IteratingSystem implements EntityListener {
                 if (regions.isEmpty()) {
                     throw new GdxRuntimeException("There is no error region in the atlas");
                 }
-            } else {
-                Gdx.app.debug(TAG, "Adding animation of type: " + type + " with " + regions.size + " regions");
             }
+//            else {
+//                Gdx.app.debug(TAG, "Adding animation of type: " + type + " with " + regions.size + " regions");
+//            }
 
             animation = new Animation2D(type.speedRate, regions, type.playMode, type);
             animationCache.put(type, animation);

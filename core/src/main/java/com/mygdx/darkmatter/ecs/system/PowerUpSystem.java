@@ -10,6 +10,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.darkmatter.ecs.component.*;
+import com.mygdx.darkmatter.event.GameEventCollectPowerUp;
+import com.mygdx.darkmatter.event.GameEventManager;
+import com.mygdx.darkmatter.event.GameEventType;
 
 import static com.mygdx.darkmatter.DarkMatter.WORLD_HEIGHT;
 import static com.mygdx.darkmatter.DarkMatter.WORLD_WIDTH;
@@ -26,6 +29,7 @@ public class PowerUpSystem extends IteratingSystem {
     private static final float LIFE_GAIN = 25f;
     private static final float SHIELD_GAIN = 25f;
 
+    private final GameEventManager gameEventManager;
     private final Engine engine;
     private final Rectangle playerBounds;
     private final Rectangle powerUpBounds;
@@ -41,10 +45,11 @@ public class PowerUpSystem extends IteratingSystem {
         ).exclude(RemoveComponent.class)
         .get();
 
-    public PowerUpSystem(final Engine engine) {
+    public PowerUpSystem(final Engine engine, final GameEventManager gameEventManager) {
         super(FAMILY);
 
         this.engine = engine;
+        this.gameEventManager = gameEventManager;
 
         playerBounds = new Rectangle();
         powerUpBounds = new Rectangle();
@@ -82,7 +87,7 @@ public class PowerUpSystem extends IteratingSystem {
 
             if (currentPattern.isEmpty()) {
                 currentPattern.addAll(spawnPatterns.random().types);
-                Gdx.app.debug(TAG, "New pattern: " + currentPattern);
+                //Gdx.app.debug(TAG, "New pattern: " + currentPattern);
             }
 
             final PowerUpComponent.PowerUpType type = currentPattern.removeIndex(0);
@@ -141,6 +146,10 @@ public class PowerUpSystem extends IteratingSystem {
                 Gdx.app.error(TAG, "Unknown power up type: " + powerUpComponent.type);
         }
 
+        gameEventManager.dispatchEvent(
+            GameEventType.COLLECT_POWER_UP,
+            new GameEventCollectPowerUp(player, powerUpComponent.type)
+        );
         entity.add(engine.createComponent(RemoveComponent.class));
     }
 

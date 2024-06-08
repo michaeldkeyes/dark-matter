@@ -3,11 +3,17 @@ package com.mygdx.darkmatter.ecs.system;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.mygdx.darkmatter.ecs.component.PlayerComponent;
 import com.mygdx.darkmatter.ecs.component.RemoveComponent;
 import com.mygdx.darkmatter.ecs.component.TransformComponent;
+import com.mygdx.darkmatter.event.GameEventManager;
+import com.mygdx.darkmatter.event.GameEventPlayerDeath;
+import com.mygdx.darkmatter.event.GameEventType;
 
 public class DamageSystem extends IteratingSystem {
+
+    private static final String TAG = DamageSystem.class.getSimpleName();
 
     public static final float DAMAGE_AREA_HEIGHT = 2f;
     private static final float DAMAGE_PER_SECOND = 25f;
@@ -15,8 +21,12 @@ public class DamageSystem extends IteratingSystem {
 
     private static final Family FAMILY = Family.all(PlayerComponent.class, TransformComponent.class).exclude(RemoveComponent.class).get();
 
-    public DamageSystem() {
+    private final GameEventManager gameEventManager;
+
+    public DamageSystem(final GameEventManager gameEventManager) {
         super(FAMILY);
+
+        this.gameEventManager = gameEventManager;
     }
 
     @Override
@@ -40,7 +50,8 @@ public class DamageSystem extends IteratingSystem {
             playerComponent.life -= damage;
 
             if (playerComponent.life <= 0) {
-                playerComponent.life = 0;
+                Gdx.app.debug(TAG, "Player died");
+                gameEventManager.dispatchEvent(GameEventType.PLAYER_DEATH, new GameEventPlayerDeath(playerComponent.distance));
 
                 final RemoveComponent removeComponent = getEngine().createComponent(RemoveComponent.class);
                 removeComponent.delay = DEATH_EXPLOSION_DURATION;

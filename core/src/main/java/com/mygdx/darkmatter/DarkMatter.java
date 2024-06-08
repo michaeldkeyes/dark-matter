@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.darkmatter.ecs.system.*;
+import com.mygdx.darkmatter.event.GameEventManager;
 import com.mygdx.darkmatter.screen.ScreenType;
 
 import java.util.EnumMap;
@@ -28,6 +29,7 @@ public class DarkMatter extends Game {
     public static final float WORLD_HEIGHT_PIXELS = 240;
 
     private Engine engine;
+    private GameEventManager gameEventManager;
     private EnumMap<ScreenType, Screen> screenCache;
     private SpriteBatch batch;
     private Viewport uiViewport;
@@ -42,15 +44,17 @@ public class DarkMatter extends Game {
         batch = new SpriteBatch();
         uiViewport = new FitViewport(WORLD_WIDTH_PIXELS, WORLD_HEIGHT_PIXELS);
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT);
+        gameEventManager = GameEventManager.getInstance();
 
         backgroundTexture = new Texture("graphics/background.png");
         graphicsAtlas = new TextureAtlas("graphics/dark-matter.atlas");
 
         engine = new PooledEngine();
+        engine.addSystem(new DebugSystem());
+        engine.addSystem(new PowerUpSystem(engine, gameEventManager));
         engine.addSystem(new PlayerSystem(viewport));
         engine.addSystem(new MoveSystem());
-        engine.addSystem(new PowerUpSystem(engine));
-        engine.addSystem(new DamageSystem());
+        engine.addSystem(new DamageSystem(gameEventManager));
         engine.addSystem(new PlayerAnimationSystem(
             graphicsAtlas.findRegion("ship_base"),
             graphicsAtlas.findRegion("ship_left"),
@@ -58,9 +62,8 @@ public class DarkMatter extends Game {
         );
         engine.addSystem(new AttachSystem());
         engine.addSystem(new AnimationSystem(graphicsAtlas));
-        engine.addSystem(new RenderSystem(batch, viewport, uiViewport, backgroundTexture));
+        engine.addSystem(new RenderSystem(batch, viewport, uiViewport, backgroundTexture, gameEventManager));
         engine.addSystem(new RemoveSystem());
-        engine.addSystem(new DebugSystem());
 
         setScreen(ScreenType.GAME_SCREEN);
     }
@@ -109,5 +112,9 @@ public class DarkMatter extends Game {
 
     public Viewport getUiViewport() {
         return uiViewport;
+    }
+
+    public GameEventManager getGameEventManager() {
+        return gameEventManager;
     }
 }

@@ -3,6 +3,7 @@ package com.mygdx.darkmatter.ecs.system;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.mygdx.darkmatter.ecs.component.RemoveComponent;
 
 public class RemoveSystem extends IteratingSystem {
@@ -21,6 +22,7 @@ public class RemoveSystem extends IteratingSystem {
 
         if (removeComponent.delay <= 0) {
             getEngine().removeEntity(entity);
+            Gdx.app.debug("RemoveSystem", "Removed entity: " + entity);
         }
     }
 }

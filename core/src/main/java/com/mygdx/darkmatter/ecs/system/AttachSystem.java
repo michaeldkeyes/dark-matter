@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.mygdx.darkmatter.ecs.component.AttachComponent;
 import com.mygdx.darkmatter.ecs.component.GraphicComponent;
 import com.mygdx.darkmatter.ecs.component.RemoveComponent;
@@ -16,6 +17,7 @@ public class AttachSystem extends IteratingSystem implements EntityListener {
         AttachComponent.class,
         TransformComponent.class,
         GraphicComponent.class)
+        .exclude(RemoveComponent.class)
         .get();
 
     public AttachSystem() {
@@ -46,6 +48,7 @@ public class AttachSystem extends IteratingSystem implements EntityListener {
 
             if (attachComponent.entity == removedEntity) {
                 entity.add(getEngine().createComponent(RemoveComponent.class));
+                Gdx.app.debug("AttachSystem", "entityRemoved: " + attachComponent.entity);
             }
         });
     }

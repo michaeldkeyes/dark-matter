@@ -6,13 +6,14 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.mygdx.darkmatter.ecs.component.PlayerComponent;
+import com.mygdx.darkmatter.ecs.component.RemoveComponent;
 import com.mygdx.darkmatter.ecs.component.TransformComponent;
 
 public class DebugSystem extends IteratingSystem {
 
     private static final float WINDOW_INFO_UPDATE_RATE = 0.25f;
 
-    private static final Family FAMILY = Family.all(PlayerComponent.class).get();
+    private static final Family FAMILY = Family.all(PlayerComponent.class).exclude(RemoveComponent.class).get();
 
     public DebugSystem() {
         super(FAMILY);

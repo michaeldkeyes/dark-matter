@@ -11,15 +11,20 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.darkmatter.ecs.component.GraphicComponent;
+import com.mygdx.darkmatter.ecs.component.PowerUpComponent;
+import com.mygdx.darkmatter.ecs.component.RemoveComponent;
 import com.mygdx.darkmatter.ecs.component.TransformComponent;
+import com.mygdx.darkmatter.event.*;
 
 import java.util.Comparator;
 
-public class RenderSystem extends SortedIteratingSystem {
+public class RenderSystem extends SortedIteratingSystem implements GameEventListener {
 
-    private static final Family FAMILY = Family.all(TransformComponent.class, GraphicComponent.class).get();
+    private static final Family FAMILY =
+        Family.all(TransformComponent.class, GraphicComponent.class).exclude(RemoveComponent.class).get();
     private static final String TAG = RenderSystem.class.getSimpleName();
 
+    private final GameEventManager gameEventManager;
     private final SpriteBatch batch;
     private final Sprite background;
     private final Viewport uiViewport;
@@ -28,9 +33,10 @@ public class RenderSystem extends SortedIteratingSystem {
     private Vector2 backgroundScrollSpeed = new Vector2(0.03f, -0.25f);
 
     public RenderSystem(final SpriteBatch batch, final Viewport viewport,
-                        final Viewport uiViewport,  final Texture backgroundTexture) {
+                        final Viewport uiViewport, final Texture backgroundTexture, final GameEventManager gameEventManager) {
         super(FAMILY, new ZComparator());
 
+        this.gameEventManager = gameEventManager;
         this.batch = batch;
 
         backgroundTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
@@ -41,6 +47,18 @@ public class RenderSystem extends SortedIteratingSystem {
     }
 
     @Override
+    public void addedToEngine(final com.badlogic.ashley.core.Engine engine) {
+        super.addedToEngine(engine);
+        gameEventManager.addListener(GameEventType.COLLECT_POWER_UP, this);
+    }
+
+    @Override
+    public void removedFromEngine(final com.badlogic.ashley.core.Engine engine) {
+        super.removedFromEngine(engine);
+        gameEventManager.removeListener(GameEventType.COLLECT_POWER_UP, this);
+    }
+
+    @Override
     public void update(final float deltaTime) {
         ScreenUtils.clear(0, 0, 0, 1);
 
@@ -48,7 +66,11 @@ public class RenderSystem extends SortedIteratingSystem {
         batch.setProjectionMatrix(uiViewport.getCamera().combined);
         batch.begin();
 
-        background.scroll(backgroundScrollSpeed.x * deltaTime, backgroundScrollSpeed.y * deltaTime);
+        backgroundScrollSpeed.y = Math.min(-0.25f, backgroundScrollSpeed.y + deltaTime * (1 / 10f));
+        background.scroll(
+            backgroundScrollSpeed.x * deltaTime,
+            backgroundScrollSpeed.y * deltaTime
+        );
         background.draw(batch);
 
         batch.end();
@@ -81,6 +103,23 @@ public class RenderSystem extends SortedIteratingSystem {
             transformComponent.size.y
         );
         graphicComponent.sprite.draw(batch);
+    }
+
+    @Override
+    public void onEvent(final GameEventType eventType, final GameEvent data) {
+        if (eventType == GameEventType.COLLECT_POWER_UP) {
+            Gdx.app.debug(TAG, "Power up collected: " + data);
+            final GameEventCollectPowerUp collectPowerUpEvent = (GameEventCollectPowerUp) data;
+
+            if (collectPowerUpEvent.getPowerUpType().equals(PowerUpComponent.PowerUpType.SPEED_1)) {
+                Gdx.app.debug(TAG, "Player collected speed 1 power up");
+                backgroundScrollSpeed.y -= -0.25f;
+
+            } else if (collectPowerUpEvent.getPowerUpType().equals(PowerUpComponent.PowerUpType.SPEED_2)) {
+                Gdx.app.debug(TAG, "Player collected speed 2 power up");
+                backgroundScrollSpeed.y -= -0.5f;
+            }
+        }
     }
 
     private static class ZComparator implements Comparator<Entity> {
